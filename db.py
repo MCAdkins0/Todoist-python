@@ -39,17 +39,17 @@ class db:
         self.cursor.execute("SELECT EXISTS(SELECT 1 FROM PROJECTS WHERE PROJECTID=:id)", {'id':project['id']})
         exists = self.cursor.fetchone()[0]
         if exists: 
-            self.cursor.execute("UPDATE PROJECTS SET NAME=:name, COLOR=:color, PARENTID=:parent WHERE PROJECTID=:id",{'id': project['id'], 'name': project['name'], 'parent': project['parent'], 'color': project['color']})
+            self.cursor.execute("UPDATE PROJECTS SET NAME=:name, COLOR=:color, PARENTID=:parent WHERE PROJECTID=:id",{'id': project['id'], 'name': project['name'], 'parent': project['parent_id'], 'color': project['color']})
             result = ' updated'
         else:
-            self.cursor.execute("INSERT INTO PROJECTS VALUES (:id,:name,:color,:parent)", {'id': project['id'], 'name':project['name'], 'parent': project['parent'], 'color': project['color']})
+            self.cursor.execute("INSERT INTO PROJECTS VALUES (:id,:name,:color,:parent)", {'id': project['id'], 'name':project['name'], 'parent': project['parent_id'], 'color': project['color']})
             result = ' added to database'
         self.db.commit()
         print('Project '+project['name']+result)
     
     def insertTask(self, task):
         #Inserts task details into the Tasks table
-        self.cursor.execute("INSERT OR IGNORE INTO TASKS VALUES (:id,:name,:parent,:color)", {'id': task['id'], 'name':task['name'], 'parent': task['parent_id'], 'color': task['color'], })
+        self.cursor.execute("INSERT OR IGNORE INTO TASKS VALUES (:id,:name,:parent,:checked,:date_added,:due,:datecompleted,:labels,:section,:recurring,:projectid)", {'id': task['id'], 'name':task['name'], 'parent': task['parent_id'], 'color': task['color'], })
         self.db.commit()
         print('Project '+task['name']+' added to database')
 

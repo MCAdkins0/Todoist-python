@@ -5,6 +5,8 @@ import db
 import tkinter as tk
 from datetime import datetime
 
+font = "Ubuntu Mono"
+
 api = TodoistAPI(constants.todoistKey)
 api.sync()
 
@@ -46,8 +48,8 @@ class Project:
         self.projectDetails = {
             'id':self.projectID,
             'name':self.projectName,
-            'color':self.color,
-            'parent':self.parentProject
+            'color':self.colorNum,
+            'parent_id':self.parentProject
         }
         return (self.projectDetails)
 
@@ -55,9 +57,23 @@ class Project:
         details = self.projectInfo()
         todoistDB.insertProject(details)
 
+    def getTasksByProject(self):
+        self.taskInfo = api.projects.get_data(self.projectID)
+        return self.taskInfo
+        
+
+    def isChecked(self):
+        self.checkState = self.projectCheckVal.get()
+        print(self.checkState)
+        if self.checkState != 'None':
+            self.getTasksByProject()
+            pass
+        else:
+            pass
+
     def tkInit(self, frame):
-        self.projectCheckval = tk.BooleanVar()
-        self.projectCheck = tk.Checkbutton(frame, text=self.name, variable=self.checkVal, onvalue=True, offvalue=False, command=appsyncapi.isChecked)
+        self.projectCheckVal = tk.BooleanVar()
+        self.projectCheck = tk.Checkbutton(frame, text=self.projectName, variable=self.projectCheckVal, onvalue=True, offvalue=False, command=self.isChecked)
 
 class Task(Project):
     def __init__(self, project, task):
@@ -88,6 +104,24 @@ class Task(Project):
             'recurring':self.isRecurring
         }
         return (self.taskDetails)
+    
+    def tasksToFrame(self, frame):
+            taskList = tk.Listbox(frame,
+            font=(font, 14),
+            width=580,
+            height=540,
+            bg="SystemButtonFace",
+            bd=0,
+            fg="#464646",
+            highlightthickness=0,
+            selectbackground="#a6a6a6",
+            activestyle="none"
+            )
+            taskScrollbar = tk.Scrollbar(frame)
+            taskList.insert(END, apiFetchedTasks['project']['name'])
+            lastItem = taskList.size()-1
+            projectColor = todosync.todoistColors[apiFetchedTasks['project']['color']]
+            taskList.itemconfig(lastItem, {'bg': projectColor})
 
 projectObjects = list()
 
@@ -118,27 +152,21 @@ def addTask(taskName, projectName, **kwargs):
     api.commit()
     return addedTask
 
-def getTasksByProject(projectName):
-    project = (todoistDB.queryProject(projectName))
-    projectid = project[0]
-    projectInfo = api.projects.get_data(projectid)
-    return projectInfo
+
 
 addProjects()
-print(projectObjects[0])
 
-p = projectObjects[0]
+p = projectObjects[0].projectDetails
 task = {
     'id':'',
-    'name':"Test adding a task",
-    'parent':'',
-    'added':datetime.now(),
+    'content':"Test adding a task",
+    'parent_id':'',
+    'date_added':datetime.now(),
     'checked':0,
-    'due':'',
-    'datecompleted':'',
+    'due':{'is_recurring':False},
+    'date_completed':'',
     'labels':'',
-    'section':'',
-    'recurring': ''
+    'section_id':''
 }
 test_task = Task(p,task)
-
+print(test_task.taskInfo())

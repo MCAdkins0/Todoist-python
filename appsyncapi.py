@@ -1,14 +1,15 @@
 import tkinter as tk
-from tkinter.constants import BOTH, BOTTOM, END, TOP, LEFT, RIGHT
+from tkinter.constants import ANCHOR, BOTH, BOTTOM, END, TOP, LEFT, RIGHT
 import todosync
 import db
 from PIL import Image, ImageTk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from functools import partial
 
 # Set up tkinter window
 window = tk.Tk()
 window.geometry('800x600')
+window.title("Todoist Task Manager")
 topFrame = ttk.Frame(window, borderwidth=3, width=800, height=60)
 topFrame.pack(side=TOP)
 #topFrame.grid(row=0, column=0)
@@ -28,26 +29,13 @@ logo_label = tk.Label(topFrame, image=logo)
 logo_label.image = logo
 logo_label.grid(row=0, column=1)
 
-def isChecked():
-    checkState = checkboxVal.get()
-    print(checkState)
-    if checkState != 'None':
-        #fetchTasks(checkState)
-        pass
-    else:
-        pass
-
-
-
-
 # Get Projects and Display them
 projectsLabel = tk.Label(topFrame, text="Projects List", font=(font, 20))
 projectsLabel.grid(row=0, column=0)
 projectrow = 0
 projectLabels = {}
 
-projects = todosync.todoistDB.queryAllProjects()
-
+#taskList for right side of screen
 taskList = tk.Listbox(taskFrame,
         font=(font, 14),
         width=580,
@@ -59,37 +47,60 @@ taskList = tk.Listbox(taskFrame,
         selectbackground="#a6a6a6",
         activestyle="none"
         )
+
 taskList.pack(side=LEFT, fill=BOTH)
 taskScrollbar = tk.Scrollbar(taskFrame)
 taskScrollbar.pack(side=RIGHT, fill=BOTH)
 
+collectedTasks = {}
+
 # Fetch tasks based on project
-def fetchTasks(project):
-    apiFetchedTasks = todosync.getTasksByProject(project)
-    fields = ["content","description"]
-    row = 0
+def fetchTasks():
+    #collectedTasks = [p['content'] for p in todosync.projectObjects['items']]
+    collectedTasks.clear()
     tasksTitle = tk.Label(topFrame, text="Task List", font=(font, 20))
     tasksTitle.grid(row=0, column=3)
-    taskList.insert(END, apiFetchedTasks['project']['name'])
-    lastItem = taskList.size()-1
-    projectColor = todosync.todoistColors[apiFetchedTasks['project']['color']]
-    taskList.itemconfig(lastItem, {'bg': projectColor})
-    for item in apiFetchedTasks["items"]:
-        taskList.insert(END, item['content'])
+    for project in todosync.projectObjects:
+        enabled = project.projectCheckVal.get()
+        if enabled:
+            taskList.insert(END, project.projectName)
+            lastItem = taskList.size()-1
+            taskList.itemconfig(lastItem, {'bg': project.color})
+            tasks = project.taskInfo['items']
+            projectTaskCounts = len(tasks) 
+            for task in tasks:
+                collectedTasks[task['content']] = task['id']
+                taskList.insert(END, task['content'])
+
+def taskDetail():
+    content = taskList.get(ANCHOR)
+    id = collectedTasks[content]
+    taskDetails = todosync.api.items.get(id)
+    try:
+        content = taskDetails['item']['content']
+        description = taskDetails['item']['description']
+        due = taskDetails['item']['due']['string']
+    except TypeError as e:
+        print(e)
+    message = "Task Information\nTask: "+content+"\nDescription: "+description+"\nDue: "+due
+    taskMessage = messagebox.Message(title=content, message=message)
 
 
-for project in projects:
+for each in todosync.projectObjects:
+    each.tkInit(projectFrame)
+    each.projectCheck.grid(row=projectrow, column=1)
     #label = tk.Label(projectFrame, text=project[1], font=(font, 14))
-    checkboxVal = tk.StringVar()
-    checkbox = tk.Checkbutton(projectFrame, text=project[1], variable=checkboxVal, onvalue=project[1], offvalue="None", command=isChecked).grid(row=projectrow, column=1)
+    #checkboxVal = tk.StringVar()
+    #checkbox = tk.Checkbutton(projectFrame, text=project[1], variable=checkboxVal, onvalue=project[1], offvalue="None", command=isChecked).grid(row=projectrow, column=1)
     #label.grid(row=projectrow, column=0)
     #projectLabels[id] = checkboxVal
     projectrow += 1
 
 
 def clearTasks():
-    for widget in taskFrame.winfo_children():
-        widget.destroy()                
+    #for widget in taskFrame.winfo_children():
+    #    widget.destroy()      
+    taskList.delete(0,END)          
 
 # Buttons for app
 getTaskButton = tk.Button(projectFrame, text="Get Tasks", command=fetchTasks)
@@ -97,6 +108,8 @@ getTaskButton.grid(row=projectrow, column=0)
 #projectrow += 1
 clearTasksButton = tk.Button(projectFrame, text="Clear Tasks", command=clearTasks)
 clearTasksButton.grid(row=projectrow, column=1)
+taskDetailButton = tk.Button(projectFrame, text="Get Task Detail", command=taskDetail)
+taskDetailButton.grid(row=projectrow, column=2)
 #getTaskButton.pack(side=BOTTOM)
 
 
