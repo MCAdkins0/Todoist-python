@@ -168,5 +168,5 @@ task = {
     'labels':'',
     'section_id':''
 }
-test_task = Task(p,task)
-print(test_task.taskInfo())
+#test_task = Task(p,task)
+#print(test_task.taskInfo())
