@@ -2,7 +2,11 @@ import tkinter as tk
 from tkinter.constants import BOTTOM, TOP, LEFT, RIGHT
 import getInfo
 from PIL import Image, ImageTk
-from tkinter import ttk
+from tkinter import Toplevel, ttk
+
+from todosync import addTask
+
+from functools import partial
 
 # Set up tkinter window
 window = tk.Tk()
@@ -64,14 +68,47 @@ def fetchTasks():
                     if search_key in task.keys():
                         print(task[search_key], str(row))
                         taskLabel = taskLabel + " " +str(task[search_key])
-                label=tk.Label(taskFrame, text=taskLabel, font=(font, 14), anchor="w")
+                label=tk.Label(taskFrame, text=taskLabel, font=(font, 14), wraplength=550, justify="left")
                 #label.grid(row = row, column=3)
-                label.pack()  
+                label.pack(anchor="w")
                 row+=1
 
 def clearTasks():
     for widget in taskFrame.winfo_children():
-        widget.destroy()                
+        widget.destroy()
+
+def addNewTask():
+    addTaskWindow = Toplevel(window)
+    addTaskWindow.title("Add New Task")
+    addTaskWindow.geometry("400x400")
+    addedTask = tk.StringVar
+    notDoneLabel = tk.Label(addTaskWindow, text="This doesn't yet do anything")
+    newTaskLabel = tk.Label(addTaskWindow, text="Task")
+    newTask = tk.Entry(addTaskWindow)
+    setProjectLabel= tk.Label(addTaskWindow, text="Project")
+    setProject = tk.Entry(addTaskWindow)
+    taskReturnLabel = tk.Label(addTaskWindow, textvariable=addedTask)
+    notDoneLabel.grid(columnspan=2, row=0)
+    newTaskLabel.grid(column=0, row=1)
+    newTask.grid(column=1, row=1)
+    setProjectLabel.grid(column=0, row=2)
+    setProject.grid(column=1, row=2)
+    task = newTask.get()
+    project = setProject.get()
+    addTaskButton = tk.Button(addTaskWindow, text="Add Task", command=partial(addTask, task, project))
+    addTaskButton.grid(column=0, row=3)
+    taskReturnLabel.grid(columnspan=2, row=4)
+
+
+mainMenuBar = tk.Menu(window)
+menu = tk.Menu(mainMenuBar)
+menu.add_command(label="New Task", underline=1, command=addNewTask)
+menu.add_command(label="Exit", underline=1, command=window.destroy)
+mainMenuBar.add_cascade(label="File", menu=menu)
+helpMenu = tk.Menu(mainMenuBar)
+helpMenu.add_command(label="Help")
+mainMenuBar.add_cascade(label="Help", menu=helpMenu)
+window.config(menu=mainMenuBar)
 
 # Buttons for app
 getTaskButton = tk.Button(projectFrame, text="Get Tasks", command=fetchTasks)
