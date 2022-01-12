@@ -120,7 +120,7 @@ class Task(Project):
             taskScrollbar = tk.Scrollbar(frame)
             taskList.insert(END, apiFetchedTasks['project']['name'])
             lastItem = taskList.size()-1
-            projectColor = todosync.todoistColors[apiFetchedTasks['project']['color']]
+            projectColor = todoistColors[apiFetchedTasks['project']['color']]
             taskList.itemconfig(lastItem, {'bg': projectColor})
 
 projectObjects = list()

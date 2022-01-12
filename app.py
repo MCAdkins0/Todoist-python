@@ -13,7 +13,11 @@ from kivy.uix.switch import Switch
 from kivymd.uix.datatables import MDDataTable
 from kivy.metrics import dp
 from PIL import Image, ImageTk
-from tkinter import ttk
+from tkinter import Toplevel, ttk
+
+from todosync import addTask
+
+from functools import partial
 
 
 class MainWindow(Screen):

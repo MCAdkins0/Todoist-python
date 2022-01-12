@@ -5,3 +5,5 @@
 /multiwindowtest.py
 /todoistlogo.jfif
 /todosync.txt
+todoist.sqlite
+*.pyc
