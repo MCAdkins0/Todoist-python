@@ -1,0 +1,101 @@
+WindowManager:
+    MainWindow:
+    TaskListWindow:
+    AddTaskWindow:
+    SettingsWindow:
+
+<MainWindow>:
+    name: "Main"
+
+    GridLayout:
+        cols: 2
+
+        Label:
+            text: "Todoist Task app"
+            height: 30
+
+        Label:
+            text: "version 0.0.2"
+
+        Button:
+            text: "Fetch Tasks"
+            on_release: 
+                app.root.current = "Todo List"
+
+        Button:
+            text: "Settings"
+            on_release: 
+                app.root.current = "Settings"
+
+<TaskListWindow>:
+    name: "Todo List"
+    
+    GridLayout:
+        cols: 2
+
+        Button:
+            text: "Back"
+            on_release: 
+                app.root.current = "Main"
+
+<AddTaskWindow>:
+    name: "Add Task"
+
+    GridLayout:
+        cols: 2
+
+        Label:
+            text: "Task Name"
+        
+        TextEntry:
+            id:taskname
+
+        Label:
+            text: "Project"
+        
+        
+
+<SettingsWindow>:
+    name: "Settings"
+
+    GridLayout:
+        cols: 1
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                text: "API Key: "
+            
+            TextInput:
+                id: apiKey
+
+            Label: 
+                text: "Inbox"
+            Switch:
+                id: "inbox"
+            
+            Label: 
+                text: "Personal"
+            Switch:
+                id: "personal"
+
+            Label: 
+                text: "Work"
+            Switch:
+                id: "work"
+
+            Label: 
+                text: "Home"
+            Switch:
+                id: "home"
+
+            Label: 
+                text: "Shopping"
+            Switch:
+                id: "shopping"
+
+        Button:
+            text: "Back"
+            on_release: 
+                app.root.current = "Main"
