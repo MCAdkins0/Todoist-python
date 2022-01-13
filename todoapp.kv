@@ -27,6 +27,11 @@ WindowManager:
             on_release: 
                 app.root.current = "Settings"
 
+        Button:
+            text: "Add Task"
+            on_release: 
+                app.root.current = "Add Task"
+
 <TaskListWindow>:
     name: "Todo List"
     
@@ -47,11 +52,19 @@ WindowManager:
         Label:
             text: "Task Name"
         
-        TextEntry:
+        TextInput:
             id:taskname
 
         Label:
+            id: task_project
             text: "Project"
+        
+        Spinner:
+            id: projectname
+            text: "Choose Project"
+            values: ["Inbox", "Personal", "Work"]
+
+            on_text: root.project_spinner_clicked(projectname.text)
         
         
 
@@ -62,7 +75,7 @@ WindowManager:
         cols: 1
 
         GridLayout:
-            cols: 2
+            cols: 3
 
             Label:
                 text: "API Key: "
@@ -70,6 +83,17 @@ WindowManager:
             TextInput:
                 id: apiKey
 
+            Button:
+                text: "Add/Update Key"
+                on_release: root.updateKey(apiKey.text)
+
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Projects"
+            Button: 
+                text: "Get Projects"
+                on_release: root.listProjects
             Label: 
                 text: "Inbox"
             Switch:

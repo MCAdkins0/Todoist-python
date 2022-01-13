@@ -10,6 +10,7 @@ font = "Ubuntu Mono"
 api = TodoistAPI(constants.todoistKey)
 api.sync()
 
+
 todoistDB = db.db(constants.database)
 todoistDB.setUpDB()
 
