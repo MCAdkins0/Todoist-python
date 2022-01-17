@@ -1,4 +1,3 @@
-from asyncio.proactor_events import constants
 import kivy
 kivy.require('2.0.0')
 import getInfo
@@ -22,13 +21,26 @@ import re
 
 # Instatiate our todoist class
 todos = getInfo.todoist()
-# Fetch Projects
-projects = todos.getProjects()
 
 class MainWindow(Screen):
     pass
 
+class ProjectLabel(Label):
+    pass
+
+class ProjectSwitch(Switch):
+    pass
+
 class SettingsWindow(Screen):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+    projects = todos.getProjects()
+    for project, id in projects.items():
+        print (project, id)
+        label = ProjectLabel(text=str(project))
+        switch = ProjectSwitch(id=int(id))
+        self.ids.list_projects_settings.add_widget(label)
+        self.ids.list_projects_settings.add_widget(switch)
     def updateKey(self, apiKey):
         with open('constants.py', 'r+') as constantsFile:
             contents = constantsFile.read()
@@ -37,9 +49,6 @@ class SettingsWindow(Screen):
             constantsFile.truncate()
             constantsFile.write(contents)
         print("This currently doesn't work, please change the key manually in the constants.py file")
-    def listProjects(self, projects):
-        for project, id in projects.items():
-            print (project, id)
 
 class TaskListWindow(Screen):
     def listTasks(self, tasks):

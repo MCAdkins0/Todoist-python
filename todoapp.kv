@@ -89,35 +89,12 @@ WindowManager:
 
         GridLayout:
             cols: 2
+            id: list_projects_settings
             Label:
                 text: "Projects"
             Button: 
                 text: "Get Projects"
-                on_release: root.listProjects
-            Label: 
-                text: "Inbox"
-            Switch:
-                id: "inbox"
-            
-            Label: 
-                text: "Personal"
-            Switch:
-                id: "personal"
-
-            Label: 
-                text: "Work"
-            Switch:
-                id: "work"
-
-            Label: 
-                text: "Home"
-            Switch:
-                id: "home"
-
-            Label: 
-                text: "Shopping"
-            Switch:
-                id: "shopping"
+                on_release: root.listProjects()
 
         Button:
             text: "Back"
