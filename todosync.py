@@ -7,9 +7,14 @@ from datetime import datetime
 
 font = "Ubuntu Mono"
 
+def sync_todoist(api_key):
+    api = TodoistAPI(api_key)
+    api.sync()
+    return api
+
+#Get rid of this as soon as I can, use the method instead
 api = TodoistAPI(constants.todoistKey)
 api.sync()
-
 
 todoistDB = db.db(constants.database)
 todoistDB.setUpDB()

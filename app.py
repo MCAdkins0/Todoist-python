@@ -10,11 +10,14 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.bubble import Bubble, BubbleButton
+from kivy.uix.checkbox import CheckBox
 from kivy.uix.switch import Switch
 from kivy.uix.textinput import TextInput
 from kivymd.uix.datatables import MDDataTable
+from kivy.uix.recycleview import RecycleView
 from kivy.metrics import dp
-from todosync import addTask
+from kivy.storage.jsonstore import JsonStore
+from todosync import addTask, sync_todoist
 from functools import partial
 import re
 
@@ -32,24 +35,28 @@ class ProjectSwitch(Switch):
     pass
 
 class SettingsWindow(Screen):
-    def __init__(self, **kw):
-        super().__init__(**kw)
-    projects = todos.getProjects()
-    for project, id in projects.items():
-        print (project, id)
-        label = ProjectLabel(text=str(project))
-        switch = ProjectSwitch(id=int(id))
-        self.ids.list_projects_settings.add_widget(label)
-        self.ids.list_projects_settings.add_widget(switch)
     def updateKey(self, apiKey):
-        with open('constants.py', 'r+') as constantsFile:
-            contents = constantsFile.read()
-            newcontents = re.sub('^todoistKey:.*$', apiKey, contents, flags = re.M)
-            constantsFile.seek(0)
-            constantsFile.truncate()
-            constantsFile.write(contents)
-        print("This currently doesn't work, please change the key manually in the constants.py file")
+        keystore= JsonStore('keystore.json')
+        keystore.put('todoistKey', api_key=apiKey)
+        tasks = JsonStore('tasks.json')
+        print(keystore.get('todoistKey')['api_key'])
+        api_sync = sync_todoist(keystore.get('todoistKey')['api_key'])
+        print(api_sync)
 
+
+    def listProjects(self):
+        projects = todos.getProjects()
+        box = self.ids.list_projects_settings
+        box.clear_widgets()
+        grid = GridLayout(cols=2)
+
+        for project, id in projects.items():
+            print (project, id)
+            label = Label(text=str(project))
+            switch = Switch(id=int(id))
+            grid.add_widget(label)
+            grid.add_widget(switch)
+        box.add_widget(grid)
 class TaskListWindow(Screen):
     def listTasks(self, tasks):
         pass

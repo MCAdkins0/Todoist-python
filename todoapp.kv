@@ -87,14 +87,14 @@ WindowManager:
                 text: "Add/Update Key"
                 on_release: root.updateKey(apiKey.text)
 
-        GridLayout:
-            cols: 2
+        BoxLayout:
             id: list_projects_settings
-            Label:
-                text: "Projects"
-            Button: 
-                text: "Get Projects"
-                on_release: root.listProjects()
+
+        Label:
+            text: "Projects"
+        Button: 
+            text: "Get Projects"
+            on_release: root.listProjects()
 
         Button:
             text: "Back"
