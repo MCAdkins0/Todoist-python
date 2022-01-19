@@ -15,7 +15,7 @@ WindowManager:
             height: 30
 
         Label:
-            text: "version 0.0.2"
+            text: "version 0.0.3"
 
         Button:
             text: "Fetch Tasks"
@@ -34,10 +34,16 @@ WindowManager:
 
 <TaskListWindow>:
     name: "Todo List"
+    id: task_list_window
     
     GridLayout:
-        cols: 2
+        cols: 1
+        id: taskGrid
 
+        Button:
+            text: "Fetch Tasks"
+            on_release:
+                root.listTasks()
         Button:
             text: "Back"
             on_release: 
