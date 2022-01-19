@@ -4,7 +4,6 @@ import getInfo
 
 from tinydb import TinyDB, Query
 from kivy.app import App
-from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.label import Label
@@ -15,13 +14,9 @@ from kivy.uix.bubble import Bubble, BubbleButton
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.switch import Switch
 from kivy.uix.textinput import TextInput
-from kivymd.uix.datatables import MDDataTable
-from kivy.uix.recycleview import RecycleView
-from kivy.metrics import dp
 from kivy.storage.jsonstore import JsonStore
 from todosync import sync_todoist
 from functools import partial
-import re
 
 
 # Instatiate our todoist class
@@ -91,24 +86,15 @@ class TaskListWindow(Screen):
     
     def listTasks(self):
         self.fetchTasks()
-        grid = self.ids.taskGrid
-        taskQuery = Query()
         taskList = taskTable.all()
         taskData = []
+        taskLayout = self.ids.taskGrid
         for task in taskList:
             taskData.append((task['projectName'],task['priority'], task['task'], task['description']))
-        self.dt = MDDataTable(
-            #use_pagination=True, 
-            column_data=[
-                ("Project", dp(30)),
-                ("Priority", dp(30)),
-                ("Task Name", dp(30)),
-                ("Description", dp(30)),
-            ],
-            row_data= taskData
-        )
-        self.add_widget(self.dt)
-        #self.ids.taskbox.data = taskList
+            taskLayout.add_widget(Label(text=task['projectName'], size_hint_y=None, size_hint_x=None, width=60))
+            taskLayout.add_widget(Label(text=str(task['priority']), size_hint_y=None, size_hint_x=None, width=10))
+            taskLayout.add_widget(Label(text=task['task'], size_hint_y=None))
+            taskLayout.add_widget(Label(text=task['description'], size_hint_y=None))
 
 class AddTaskWindow(Screen):
     def listProjects(self, projects):
@@ -123,7 +109,7 @@ class WindowManager(ScreenManager):
 
 kv = Builder.load_file("todoapp.kv")
 
-class TodoApp(MDApp):
+class TodoApp(App):
 
     keystore = JsonStore('keystore.json')
 

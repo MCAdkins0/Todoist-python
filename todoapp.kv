@@ -38,16 +38,26 @@ WindowManager:
     
     GridLayout:
         cols: 1
-        id: taskGrid
+
+        ScrollView:
+            do_scroll_y: True
+            GridLayout:
+                cols:4
+                size_hint_y: None
+                id:taskGrid
 
         Button:
             text: "Fetch Tasks"
             on_release:
                 root.listTasks()
+            size_hint_y: None
+            height: 20
         Button:
             text: "Back"
             on_release: 
                 app.root.current = "Main"
+            size_hint_y: None
+            height: 20
 
 <AddTaskWindow>:
     name: "Add Task"
